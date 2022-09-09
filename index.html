@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<!-- https://codepen.io/jasesmith/pen/rZmKQG -->
+
+<head>
+    <meta charset="UTF-8">
+    <title>Grad</title>
+    <link rel="stylesheet" href="app.css">
+
+    <script>
+        window.console = window.console || function (t) { };
+    </script>
+
+    <script>
+        if (document.location.search.match(/type=embed/gi)) {
+            window.parent.postMessage("resize", "*");
+        }
+    </script>
+</head>
+
+<body translate="no">
+    <main v-cloak>
+        <div class="tools">
+            <div>
+                <input type="color" v-model="color1" />
+                <input type="text" v-model="color1" />
+            </div>
+            <div>
+                <div class="vertical-range"><input type="range" :min="min" :max="max" v-model="steps" /></div>
+                <div class="steps">{{visualSteps}} {{visualStepsLabel}}</div>
+            </div>
+            <div>
+                <input type="color" v-model="color2" />
+                <input type="text" v-model="color2" />
+            </div>
+        </div>
+        <div class="colors">
+            <div class="color" v-for="color in colors" :style="setStyles(color)">&nbsp;{{colorName(color)}}</div>
+        </div>
+    </main>
+    <script src='https://unpkg.com/vue@2'></script>
+    <script src='app.js'></script>
+    <script id="rendered-js">
+        let vm = new Vue({
+            el: 'main',
+            mixins: [vueMixinColorFunctions],
+            data: {
+                min: 3,
+                max: 27,
+                delta: 10,
+                steps: 11,
+                color1: '#0ebeff',
+                color2: '#ff42b3'
+            },
+
+            computed: {
+                colors() {
+                    return this.interpolateColors(this.color1, this.color2, this.steps);
+                },
+                visualSteps() {
+                    return this.steps - 2;
+                },
+                visualStepsLabel() {
+                    return this.visualSteps === 1 ? 'step' : 'steps';
+                }
+            },
+
+            methods: {
+                adjust(color) {
+                    const hex = this.rgbToHex(color[0], color[1], color[2]);
+                    return this.foregroundAdjust(hex);
+                },
+                setStyles(color) {
+                    return `background: rgb(${color}); color: ${this.adjust(color)}`;
+                },
+                colorName(color) {
+                    return this.rgbArrayToHex(color);
+                }
+            }
+        });
+    </script>
+
+</body>
+
+</html>
